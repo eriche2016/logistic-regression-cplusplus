@@ -1,3 +1,0 @@
-The total number of sample is : 93
-The correct prediction number is : 93
-Precision : 1
