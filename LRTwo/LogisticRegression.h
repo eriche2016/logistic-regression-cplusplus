@@ -1,3 +1,9 @@
+/***********************************************************************************
+* Logistic Regression classifier version 0.01
+* Implemented by Jinghui Xiao (xiaojinghui@gmail.com or xiaojinghui1978@qq.com)
+* Last updated on 2014-1-11
+***********************************************************************************/
+
 #pragma once
 
 #include <vector>
