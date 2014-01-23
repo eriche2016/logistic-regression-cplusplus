@@ -383,6 +383,69 @@ bool LogisticRegression::TrainSGDOnSampleFileEx (
 	return true;
 }
 
+// the sample format: classid feature1_value feature2_value...
+bool LogisticRegression::TrainSGDOnSampleFileEx2 (
+			const char * sFileName, int iClassNum, int iFeatureNum,		// about the samples
+			double dLearningRate = 0.05,								// about the learning
+			int iMaxLoop = 1, double dMinImproveRatio = 0.01			// about the stop criteria
+			)
+{
+	ifstream in (sFileName);
+	if (!in)
+	{
+		cerr << "Can not open the file of " << sFileName << endl;
+		return false;
+	}
+
+	if (!InitThetaMatrix (iClassNum, iFeatureNum))
+		return false;
+
+	vector<Sample> SampleVec;
+	if (!LoadAllSamples (sFileName, SampleVec))
+		return false;
+
+	double dCost = 0.0;
+	double dPreCost = 100.0;
+	for (int iLoop = 0; iLoop < iMaxLoop; iLoop++)
+	{
+		srand((unsigned)time(NULL));
+		int iErrNum = 0;
+		int iSampleNum = (int)SampleVec.size();
+		for (int i=0; i<iSampleNum; i++)
+		{
+			double dRandomFloat = (double)rand() / RAND_MAX;
+			int iSampleIndex = (int)(dRandomFloat * iSampleNum);
+
+			vector<double> ClassProbVec;
+			int iPredClassIndex = CalcFuncOutByFeaVecForAllClass (SampleVec[iSampleIndex].FeaValNodeVec, ClassProbVec);
+			if (iPredClassIndex != SampleVec[iSampleIndex].iClass)
+				iErrNum++;
+
+			dCost += UpdateThetaMatrix (SampleVec[iSampleIndex], ClassProbVec, dLearningRate); 
+		}
+
+		dCost /= iSampleNum;
+		double dTmpRatio = (dPreCost - dCost) / dPreCost;
+		double dTmpErrRate = (double)iErrNum / iSampleNum;
+
+		// show info on screen
+		cout << "In loop " << iLoop << ": current cost (" << dCost << ") previous cost (" << dPreCost << ") ratio (" << dTmpRatio << ") "<< endl;
+		cout << "And Error rate : " << dTmpErrRate << endl;
+
+		/*if (dTmpRatio < dMinImproveRatio)
+			break;
+		else*/
+		if (dCost < 0.001)
+			break;
+		{
+			dPreCost = dCost;
+			dCost = 0.0;
+		}
+	}
+
+	return true;
+}
+
 bool LogisticRegression::SaveLRModelTxt (const char *sFileName)
 {
 	if (ThetaMatrix.empty())
@@ -511,18 +574,23 @@ void LogisticRegression::Test (void)
 	SaveLRModelTxt ("Model\\Mod_Scale_02_200_001.txt");
 	LoadLRModelTxt ("Model\\Mod_Scale_02_200_001.txt");
 	PredictOnSampleFile ("..\\Data\\SamplesMultClassesTestScale.txt", "Model\\Rslt_Scale_02_200_001.txt", "Model\\Log_Scale_02_200_001.txt");*/
-	TrainSGDOnSampleFile ("..\\Data\\SamplesMultClassesTrainScale.txt", 6, 25334, 0.5, 200, 0.05);
+	/*TrainSGDOnSampleFile ("..\\Data\\SamplesMultClassesTrainScale.txt", 6, 25334, 0.5, 200, 0.05);
 	SaveLRModelTxt ("Model\\Mod_Scale_05_200_001.txt");
 	LoadLRModelTxt ("Model\\Mod_Scale_05_200_001.txt");
-	PredictOnSampleFile ("..\\Data\\SamplesMultClassesTestScale.txt", "Model\\Rslt_Scale_05_200_001.txt", "Model\\Log_Scale_05_200_001.txt");
+	PredictOnSampleFile ("..\\Data\\SamplesMultClassesTestScale.txt", "Model\\Rslt_Scale_05_200_001.txt", "Model\\Log_Scale_05_200_001.txt");*/
 
 	/*TrainSGDOnSampleFileEx ("..\\Data\\SamplesMultClassesTrainScale.txt", 6, 25334, 0.1, 200, 0.05);
 	SaveLRModelTxt ("Model\\ModEx_Scale_01_200_001.txt");
 	LoadLRModelTxt ("Model\\ModEx_Scale_01_200_001.txt");
 	PredictOnSampleFile ("..\\Data\\SamplesMultClassesTestScale.txt", "Model\\RsltEx_Scale_01_200_001.txt", "Model\\LogEx_Scale_01_200_001.txt");*/
-	/*TrainSGDOnSampleFileEx ("..\\Data\\SamplesMultClassesTrainScale.txt", 6, 25334, 0.01, 200, 0.05);
+	TrainSGDOnSampleFileEx ("..\\Data\\SamplesMultClassesTrainScale.txt", 6, 25334, 0.01, 200, 0.05);
 	SaveLRModelTxt ("Model\\ModEx_Scale_001_200_001.txt");
 	LoadLRModelTxt ("Model\\ModEx_Scale_001_200_001.txt");
-	PredictOnSampleFile ("..\\Data\\SamplesMultClassesTestScale.txt", "Model\\RsltEx_Scale_001_200_001.txt", "Model\\LogEx_Scale_001_200_001.txt");*/
+	PredictOnSampleFile ("..\\Data\\SamplesMultClassesTestScale.txt", "Model\\RsltEx_Scale_001_200_001.txt", "Model\\LogEx_Scale_001_200_001.txt");
+
+	/*TrainSGDOnSampleFileEx2 ("..\\Data\\SamplesMultClassesTrainScale.txt", 6, 25334, 0.5, 200, 0.05);
+	SaveLRModelTxt ("Model\\ModEx2_Scale_05_200_001.txt");
+	LoadLRModelTxt ("Model\\ModEx2_Scale_05_200_001.txt");
+	PredictOnSampleFile ("..\\Data\\SamplesMultClassesTestScale.txt", "Model\\RsltEx2_Scale_05_200_001.txt", "Model\\LogEx2_Scale_05_200_001.txt");*/
 }
 
