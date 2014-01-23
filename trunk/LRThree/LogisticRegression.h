@@ -13,6 +13,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 
 using namespace std;
 
@@ -59,6 +60,12 @@ public:
 				);
 	// train by SGD on the sample file, decreasing dLearningRate during loop
 	bool TrainSGDOnSampleFileEx (
+				const char * sFileName, int iClassNum, int iFeatureNum,		// about the samples
+				double dLearningRate,										// about the learning 
+				int iMaxLoop, double dMinImproveRatio						// about the stop criteria
+				);
+	// train by SGD on the sample file, load all of the sample once a time and choose it randomly to train
+	bool TrainSGDOnSampleFileEx2 (
 				const char * sFileName, int iClassNum, int iFeatureNum,		// about the samples
 				double dLearningRate,										// about the learning 
 				int iMaxLoop, double dMinImproveRatio						// about the stop criteria
