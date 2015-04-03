@@ -1,0 +1,3 @@
+This project implements logistic regression modle by c++ in visual studio on windows os. It is for my self-learning. Untill now, there are three projects: LROne, LRTwo and LRThree. LROne: binary classification, requires that the input value of each feature is the 0-1 value. LRTwo: binary classification, requires that the input value of each feature is the regulared float value. LRThree: multiple classification, requires that the input value of each feature is the regulared float value.
+
+There are some data for training and testing. They are from net. Some of them are from the website of libsvm. The others are from other LR package.
